@@ -1,0 +1,358 @@
+/* =========================================
+   PREP VAULT — AUTH PAGES
+   Shared by Login and Signup. Same system
+   as the landing page and dashboard.
+========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+:root {
+  --paper: #f1ede3;
+  --paper-raised: #ffffff;
+  --ink: #201f1c;
+  --ink-soft: #6e6759;
+  --ink-faint: #a39c8a;
+  --rule: #ddd5c3;
+  --rule-strong: #c9bfa8;
+  --indigo: #2a3492;
+  --indigo-ink: #1c2470;
+  --gold: #e0a028;
+  --gold-soft: #f6e3bb;
+  --success: #3e7a52;
+  --danger: #a13a2f;
+  --danger-soft: #f3e0dc;
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 22px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* =========================================
+   SHELL
+========================================= */
+
+.auth-shell {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px 60px;
+
+  background: var(--paper);
+  background-image: radial-gradient(circle at 1px 1px, rgba(32, 31, 28, 0.05) 1px, transparent 0);
+  background-size: 22px 22px;
+
+  font-family: var(--font-body);
+  color: var(--ink);
+}
+
+/* =========================================
+   TOPBAR — redirects back to the landing page
+========================================= */
+
+.auth-topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 22px 6%;
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  text-decoration: none;
+}
+
+.auth-brand::before {
+  content: "P";
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--indigo);
+  color: #fff;
+  font-size: 14px;
+  transform: rotate(-6deg);
+}
+
+.auth-home-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.auth-home-link:hover {
+  color: var(--indigo);
+}
+
+/* =========================================
+   CARD — ticket stub
+========================================= */
+
+.auth-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+
+  background: var(--paper-raised);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-lg);
+  padding: 40px 36px 34px;
+}
+
+.auth-card::before,
+.auth-card::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+.auth-card::before {
+  left: -12px;
+  border-right: none;
+  clip-path: inset(0 0 0 50%);
+}
+
+.auth-card::after {
+  right: -12px;
+  border-left: none;
+  clip-path: inset(0 50% 0 0);
+}
+
+.auth-card h1 {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+}
+
+.auth-card .sub {
+  margin: 0 0 26px;
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* =========================================
+   TRUST / NOTE PILL
+========================================= */
+
+.auth-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 24px;
+  padding: 9px 14px;
+  background: var(--gold-soft);
+  border: 1.5px solid var(--gold);
+  border-radius: 999px;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+/* =========================================
+   ERROR
+========================================= */
+
+.form-error {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  background: var(--danger-soft);
+  border-left: 3px solid var(--danger);
+  border-radius: var(--radius-sm);
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* =========================================
+   FIELDS
+========================================= */
+
+.field {
+  margin-bottom: 18px;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.field input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.field input::placeholder {
+  color: var(--ink-faint);
+}
+
+.field input:focus {
+  outline: none;
+  border-color: var(--indigo);
+  background: var(--paper-raised);
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 22px;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: transform 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--ink);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--indigo-ink);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 6px;
+  padding: 14px 22px;
+}
+
+/* =========================================
+   SWITCH LINK
+========================================= */
+
+.auth-switch {
+  margin: 24px 0 0;
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 13.5px;
+}
+
+.auth-switch a {
+  color: var(--indigo);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
+}
+
+/* =========================================
+   DIVIDER (perforation, between card and note)
+========================================= */
+
+.auth-divider {
+  height: 1.5px;
+  margin: 26px 0;
+  background: repeating-linear-gradient(
+    to right,
+    var(--rule-strong) 0,
+    var(--rule-strong) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+}
+
+/* =========================================
+   FOCUS STATES
+========================================= */
+
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 500px) {
+  .auth-shell {
+    padding: 90px 16px 40px;
+  }
+
+  .auth-card {
+    padding: 32px 24px 28px;
+  }
+
+  .auth-topbar {
+    padding: 18px 5%;
+  }
+}

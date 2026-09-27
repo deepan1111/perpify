@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signup } from "../lib/api.js";
 
+import "./Auth.css";
+
 export default function Signup({ onAuthed }) {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
@@ -18,8 +20,12 @@ export default function Signup({ onAuthed }) {
     setLoading(true);
     try {
       const data = await signup(form);
-      onAuthed(data);
-      navigate("/dashboard");
+
+      navigate("/verify-email", {
+        state: {
+          email: data.email,
+        },
+      });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -29,16 +35,41 @@ export default function Signup({ onAuthed }) {
 
   return (
     <div className="auth-shell">
+
+      {/* TOPBAR — redirects back to the landing page */}
+      <div className="auth-topbar">
+        <Link to="/" className="auth-brand">
+          Prep Vault
+        </Link>
+
+        <Link to="/" className="auth-home-link">
+          ← Back to home
+        </Link>
+      </div>
+
       <div className="auth-card">
         <h1>Create your account</h1>
-        <div className="credit-badge">🎁 Get 3 free credits on signup</div>
+
+        <p className="sub">
+          Sign up, then unlock any company's pack for ₹59.
+        </p>
+
+        <div className="auth-note">
+          🎫 ₹59 per pack · one-time · 7-day money-back guarantee
+        </div>
 
         {error && <div className="form-error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="field">
             <label htmlFor="name">Name</label>
-            <input id="name" required value={form.name} onChange={update("name")} />
+            <input
+              id="name"
+              required
+              placeholder="Your full name"
+              value={form.name}
+              onChange={update("name")}
+            />
           </div>
           <div className="field">
             <label htmlFor="email">Email</label>
@@ -46,6 +77,7 @@ export default function Signup({ onAuthed }) {
               id="email"
               type="email"
               required
+              placeholder="you@college.edu"
               value={form.email}
               onChange={update("email")}
             />
@@ -57,6 +89,7 @@ export default function Signup({ onAuthed }) {
               type="password"
               required
               minLength={6}
+              placeholder="At least 6 characters"
               value={form.password}
               onChange={update("password")}
             />
