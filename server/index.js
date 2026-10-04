@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
+import Razorpay from "razorpay";
 
 // ========================================
 // DNS FIX
@@ -16,6 +17,9 @@ import crypto from "crypto";
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 dotenv.config();
+
+
+
 
 // ========================================
 // ENVIRONMENT VARIABLES
@@ -79,6 +83,162 @@ const app = express();
 app.use(cors());
 
 app.use(express.json());
+
+
+const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
+const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
+
+if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
+  console.error("❌ Razorpay keys are missing from .env");
+  process.exit(1);
+}
+
+const razorpay = new Razorpay({
+  key_id: RAZORPAY_KEY_ID,
+  key_secret: RAZORPAY_KEY_SECRET,
+});
+
+// ======================================================
+// RAZORPAY - CREATE TEST ORDER
+// ======================================================
+
+app.post(
+  "/api/payments/create-order",
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const { packId } = req.body || {};
+
+      if (!packId) {
+        return res.status(400).json({
+          error: "Pack ID is required",
+        });
+      }
+
+      const pack = await Pack.findById(packId);
+
+      if (!pack) {
+        return res.status(404).json({
+          error: "Preparation pack not found",
+        });
+      }
+
+      if (!pack.published) {
+        return res.status(400).json({
+          error: "This preparation pack is not available",
+        });
+      }
+
+      const amount = Math.round(Number(pack.price) * 100);
+
+      if (!Number.isFinite(amount) || amount <= 0) {
+        return res.status(400).json({
+          error: "Invalid pack price",
+        });
+      }
+
+      const order = await razorpay.orders.create({
+        amount,
+        currency: "INR",
+        receipt: `pack_${pack._id}_${Date.now()}`,
+      });
+
+      return res.json({
+        success: true,
+        order: {
+          id: order.id,
+          amount: order.amount,
+          currency: order.currency,
+        },
+        keyId: RAZORPAY_KEY_ID,
+        pack: {
+          id: pack._id,
+          title: pack.title,
+          price: pack.price,
+        },
+      });
+    } catch (error) {
+      console.error("Create Razorpay order error:", error);
+
+      return res.status(500).json({
+        error: "Failed to create payment order",
+      });
+    }
+  }
+);
+
+// ======================================================
+// RAZORPAY - VERIFY PAYMENT
+// ======================================================
+
+app.post(
+  "/api/payments/verify",
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const {
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+      } = req.body || {};
+
+      if (
+        !razorpay_order_id ||
+        !razorpay_payment_id ||
+        !razorpay_signature
+      ) {
+        return res.status(400).json({
+          success: false,
+          error: "Payment verification details are required",
+        });
+      }
+
+      const generatedSignature = crypto
+        .createHmac(
+          "sha256",
+          RAZORPAY_KEY_SECRET
+        )
+        .update(
+          `${razorpay_order_id}|${razorpay_payment_id}`
+        )
+        .digest("hex");
+
+      const isValid =
+        generatedSignature === razorpay_signature;
+
+      if (!isValid) {
+        return res.status(400).json({
+          success: false,
+          error: "Invalid payment signature",
+        });
+      }
+
+      console.log(
+        "✅ Razorpay payment verified:",
+        razorpay_payment_id
+      );
+
+      return res.json({
+        success: true,
+        message: "Payment verified successfully",
+        payment: {
+          orderId: razorpay_order_id,
+          paymentId: razorpay_payment_id,
+        },
+      });
+    } catch (error) {
+      console.error(
+        "Razorpay verification error:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        error: "Payment verification failed",
+      });
+    }
+  }
+);
 
 // ========================================
 // USER SCHEMA
@@ -175,79 +335,44 @@ const Company = mongoose.model("Company", companySchema);
 // PREPARATION PACK MODEL
 // ======================================================
 
-const roundSchema = new mongoose.Schema(
-  {
+const roundSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+
+  howToPrepare: {
+    type: String,
+    default: "",
+    trim: true
+  },
+
+  material: {
     name: {
       type: String,
-      required: true,
-      trim: true,
+      default: ""
     },
-
-    description: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-
-    order: {
-      type: Number,
-      default: 1,
-    },
-  },
-  {
-    _id: true,
-  }
-);
-
-const questionSchema = new mongoose.Schema(
-  {
-    question: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    category: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-
-    round: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-  },
-  {
-    _id: true,
-  }
-);
-
-const materialSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    type: {
-      type: String,
-      default: "file",
-      trim: true,
-    },
-
     url: {
       type: String,
-      required: true,
-      trim: true,
+      default: ""
     },
+    type: {
+      type: String,
+      default: "pdf"
+    }
   },
-  {
-    _id: true,
+
+  order: {
+    type: Number,
+    default: 1
   }
-);
+}, {
+  _id: true
+});
+
+
+
 
 const packSchema = new mongoose.Schema(
   {
@@ -279,6 +404,7 @@ const packSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    
 
     // URL SLUG
     slug: {
@@ -301,17 +427,7 @@ const packSchema = new mongoose.Schema(
       default: [],
     },
 
-    // QUESTIONS
-    questions: {
-      type: [questionSchema],
-      default: [],
-    },
-
-    // FILES / MATERIALS
-    materials: {
-      type: [materialSchema],
-      default: [],
-    },
+   
 
     // PRICE
     price: {
@@ -447,12 +563,12 @@ async function sendVerificationEmail(
   otp
 ) {
   await transporter.sendMail({
-    from: `"Prep Vault" <${EMAIL_USER}>`,
+    from: `"Prepify" <${EMAIL_USER}>`,
 
     to: email,
 
     subject:
-      "Verify your Prep Vault account",
+      "Verify your Prepify account",
 
     html: `
       <!DOCTYPE html>
@@ -463,7 +579,7 @@ async function sendVerificationEmail(
         <meta charset="UTF-8" />
 
         <title>
-          Prep Vault Verification
+          Prepify Verification
         </title>
       </head>
 
@@ -488,12 +604,12 @@ async function sendVerificationEmail(
         >
 
           <h2>
-            Welcome to Prep Vault 👋
+            Welcome to Prepify 👋
           </h2>
 
           <p>
             Thanks for creating your
-            Prep Vault account.
+            Prepify account.
           </p>
 
           <p>
@@ -548,7 +664,7 @@ async function sendVerificationEmail(
               font-size: 13px;
             "
           >
-            Prep Vault
+            Prepify 
           </p>
 
         </div>
@@ -1426,23 +1542,33 @@ function slugify(value) {
 // ======================================================
 
 function cleanRounds(rounds) {
-  if (!Array.isArray(rounds)) {
-    return [];
-  }
+  if (!Array.isArray(rounds)) return [];
 
   return rounds
     .map((round, index) => ({
       name: String(round?.name || "").trim(),
 
-      description: String(
-        round?.description || ""
+      howToPrepare: String(
+        round?.howToPrepare || ""
       ).trim(),
 
-      order:
-        Number(round?.order) ||
-        index + 1,
+      material: {
+        name: String(
+          round?.material?.name || ""
+        ).trim(),
+
+        url: String(
+          round?.material?.url || ""
+        ).trim(),
+
+        type: String(
+          round?.material?.type || "pdf"
+        ).trim()
+      },
+
+      order: Number(round?.order) || index + 1
     }))
-    .filter((round) => round.name);
+    .filter(round => round.name);
 }
 
 
@@ -1450,58 +1576,12 @@ function cleanRounds(rounds) {
 // CLEAN QUESTIONS
 // ======================================================
 
-function cleanQuestions(questions) {
-  if (!Array.isArray(questions)) {
-    return [];
-  }
-
-  return questions
-    .map((item) => ({
-      question: String(
-        item?.question || ""
-      ).trim(),
-
-      category: String(
-        item?.category || ""
-      ).trim(),
-
-      round: String(
-        item?.round || ""
-      ).trim(),
-    }))
-    .filter((item) => item.question);
-}
-
 
 // ======================================================
 // CLEAN MATERIALS
 // ======================================================
 
-function cleanMaterials(materials) {
-  if (!Array.isArray(materials)) {
-    return [];
-  }
 
-  return materials
-    .map((item) => ({
-      name: String(
-        item?.name || ""
-      ).trim(),
-
-      type: String(
-        item?.type || "file"
-      ).trim(),
-
-      url: String(
-        item?.url || ""
-      ).trim(),
-    }))
-    .filter(
-      (item) =>
-        item.name &&
-        item.url
-    );
-}
 
 
 // ======================================================
@@ -1539,17 +1619,21 @@ function formatAdminPack(pack) {
       pack.preparation ||
       "",
 
-    rounds:
-      pack.rounds ||
-      [],
+  rounds: (pack.rounds || []).map((round) => ({
+  _id: round._id,
+  name: round.name,
+  howToPrepare: round.howToPrepare || "",
+  material: round.material?.name
+    ? {
+        name: round.material.name,
+        type: round.material.type || "pdf",
+      }
+    : null,
+  order: round.order,
+})),
+   
 
-    questions:
-      pack.questions ||
-      [],
-
-    materials:
-      pack.materials ||
-      [],
+   
 
     price: pack.price,
 
@@ -1563,13 +1647,9 @@ function formatAdminPack(pack) {
       pack.rounds?.length ||
       0,
 
-    questionCount:
-      pack.questions?.length ||
-      0,
+   
 
-    materialCount:
-      pack.materials?.length ||
-      0,
+  
 
     createdAt:
       pack.createdAt,
@@ -1636,8 +1716,6 @@ app.post(
         title,
         preparation = "",
         rounds = [],
-        questions = [],
-        materials = [],
         price,
       } = req.body || {};
 
@@ -1768,15 +1846,9 @@ app.post(
               rounds
             ),
 
-          questions:
-            cleanQuestions(
-              questions
-            ),
+         
 
-          materials:
-            cleanMaterials(
-              materials
-            ),
+        
 
           price:
             numericPrice,
@@ -1857,8 +1929,6 @@ app.put(
         title,
         preparation,
         rounds,
-        questions,
-        materials,
         price,
       } = req.body || {};
 
@@ -1961,13 +2031,7 @@ app.put(
       if (
         questions !==
         undefined
-      ) {
-
-        pack.questions =
-          cleanQuestions(
-            questions
-          );
-      }
+      ) 
 
 
       // MATERIALS
@@ -2276,15 +2340,8 @@ app.get(
                 ?.length ||
               0,
 
-            questionCount:
-              pack.questions
-                ?.length ||
-              0,
+            
 
-            materialCount:
-              pack.materials
-                ?.length ||
-              0,
 
             published:
               pack.published,
@@ -2385,13 +2442,9 @@ app.get(
             pack.rounds ||
             [],
 
-          questions:
-            pack.questions ||
-            [],
+        
 
-          materials:
-            pack.materials ||
-            [],
+         
 
           price:
             pack.price,
@@ -2468,7 +2521,7 @@ async function startServer() {
 
       () => {
         console.log(
-          `🚀 Prep Vault API running on http://localhost:${PORT}`
+          `🚀 Prepify API running on http://localhost:${PORT}`
         );
       }
     );

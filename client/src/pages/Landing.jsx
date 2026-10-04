@@ -1,7 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import logo from "../pages/logo5.png";
 
 import "./Landing.css";
+
+const FEATURES = [
+  {
+    icon: "🎯",
+    title: "One pack per company, built around how it hires",
+    detail:
+      "No generic placement course. Every pack is scoped to a single company's real rounds, so you only study what can actually come up.",
+    foot: "Company-specific",
+    wide: true,
+  },
+  {
+    icon: "🧮",
+    title: "Quant & reasoning sets",
+    detail: "Topic-wise practice built around the patterns that company tests.",
+    foot: "Aptitude round",
+  },
+  {
+    icon: "💻",
+    title: "Coding with walkthroughs",
+    detail: "Original problems, each with a full explanation of the approach.",
+    foot: "Coding round",
+  },
+  {
+    icon: "🗣️",
+    title: "Interview breakdowns",
+    detail: "What is asked at each round, in order, and how to structure answers.",
+    foot: "Technical + HR",
+  },
+  {
+    icon: "🔄",
+    title: "Updated every season",
+    detail: "Packs are revised when a company changes its pattern, at no extra cost.",
+    foot: "Free updates",
+  },
+];
 
 const PACKS = [
   {
@@ -34,7 +70,6 @@ const REASONS = [
     title: "One price, nothing recurring",
     detail: "₹39 unlocks the pack for good. No subscription, no auto-renewal to remember to cancel.",
   },
- 
 ];
 
 const FAQ = [
@@ -57,23 +92,63 @@ const FAQ = [
 ];
 
 export default function Landing({ user }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = () => setMenuOpen(false);
+
+  // close the menu with the Escape key
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e) => e.key === "Escape" && setMenuOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
   return (
     <div className="landing">
+      {/* ==================================
+          NAV
+      ================================== */}
+
       <nav className="nav wrap">
-        <Link to="/" className="brand">
-          Prep Vault
-        </Link>
-        <div className="nav-links">
+        <div className="dashboard-brand">
+          <img
+            src={logo}
+            alt="Prepify"
+            className="dashboard-logo"
+            style={{
+              width: "150px",
+              height: "auto",
+              display: "block",
+              objectFit: "contain",
+            }}
+          />
+        </div>
+
+        {/* burger — only visible on phones */}
+        <button
+          type="button"
+          className={`nav-burger${menuOpen ? " is-open" : ""}`}
+          onClick={() => setMenuOpen((o) => !o)}
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          aria-controls="nav-menu"
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+
+        <div id="nav-menu" className={`nav-links${menuOpen ? " is-open" : ""}`}>
           {user ? (
-            <Link to="/dashboard" className="btn btn-primary">
+            <Link to="/dashboard" className="btn btn-primary" onClick={closeMenu}>
               Go to dashboard
             </Link>
           ) : (
             <>
-              <Link to="/login" className="btn btn-ghost">
+              <Link to="/login" className="btn btn-ghost" onClick={closeMenu}>
                 Log in
               </Link>
-              <Link to="/signup" className="btn btn-primary">
+              <Link to="/signup" className="btn btn-primary" onClick={closeMenu}>
                 Unlock a pack
               </Link>
             </>
@@ -81,26 +156,68 @@ export default function Landing({ user }) {
         </div>
       </nav>
 
+      {/* ==================================
+          HERO
+      ================================== */}
+
       <header className="hero wrap">
-        <p className="hero-eyebrow">Company-specific placement packs</p>
-        <h1>Stop guessing what a company's test will look like.</h1>
-        <p>
-          Each pack is built around one company's actual hiring pattern — aptitude, coding,
-          technical rounds and interview questions, organised and kept current. No 400-video
-          course to sit through, no scattered PDFs to piece together.
-        </p>
-        <div className="hero-actions">
-          <Link to="/signup" className="btn btn-primary">
-            Unlock your first pack — ₹39
-          </Link>
-          <Link to="#whats-inside" className="btn btn-ghost">
-            See what's inside
-          </Link>
+        <div className="hero-copy">
+          {/* <p className="hero-eyebrow">Company-specific placement packs</p> */}
+          <h1>Stop guessing what a company's test will look like.</h1>
+          <p>
+            Each pack is built around one company's actual hiring pattern — aptitude, coding,
+            technical rounds and interview questions, organised and kept current. No 400-video
+            course to sit through, no scattered PDFs to piece together.
+          </p>
+          <div className="hero-actions">
+            <Link to="/signup" className="btn btn-primary">
+              Unlock your first pack — ₹39
+            </Link>
+            {/* a plain anchor, because <Link to="#id"> does not scroll */}
+            <a href="#whats-inside" className="btn btn-ghost">
+              See what's inside
+            </a>
+          </div>
+          <p className="hero-note">One-time price · No subscription</p>
         </div>
-        <p className="hero-note">
-          One-time price ·  No subscription
-        </p>
+
+        <aside className="lp-ticket" aria-label="Example company pack">
+          <div className="lp-ticket-top">
+            <div className="lp-ticket-company">
+              <div className="lp-ticket-logo">C</div>
+              <div>
+                <strong>Company pack</strong>
+                <span>PREPIFY</span>
+              </div>
+            </div>
+            <h3>Placement Prep Pack</h3>
+            <p className="lp-ticket-role">Aptitude · Coding · Interview</p>
+            <ul className="lp-ticket-rounds">
+              <li>
+                <b>R1</b> Aptitude round <span>INCLUDED</span>
+              </li>
+              <li>
+                <b>R2</b> Coding round <span>INCLUDED</span>
+              </li>
+              <li>
+                <b>R3</b> Interview round <span>INCLUDED</span>
+              </li>
+            </ul>
+          </div>
+          <div className="lp-ticket-tear" />
+          <div className="lp-ticket-bottom">
+            <div>
+              <span>ONE-TIME PRICE</span>
+              <strong>₹39</strong>
+            </div>
+            <div className="lp-ticket-stamp">ADMIT ONE</div>
+          </div>
+        </aside>
       </header>
+
+      {/* ==================================
+          COMPANIES
+      ================================== */}
 
       <div className="companies wrap">
         <span>Accenture</span>
@@ -137,7 +254,7 @@ export default function Landing({ user }) {
           </div>
 
           <div className="compare-card good">
-            <h3>Prep Vault pack</h3>
+            <h3>Prepify pack</h3>
             <ul className="compare-list">
               <li>Built around one company's actual hiring pattern</li>
               <li>Round-by-round breakdown, so you know what's coming</li>
@@ -145,6 +262,32 @@ export default function Landing({ user }) {
               <li>Revised whenever the pattern changes</li>
             </ul>
           </div>
+        </div>
+      </section>
+
+      {/* ==================================
+          FEATURES
+      ================================== */}
+
+      <section className="section wrap" id="features">
+        <span className="section-tag">What you get</span>
+        <h2>Everything for one interview, in one pack.</h2>
+        <p className="section-lead">
+          Each pack follows the order a company actually tests you in.
+        </p>
+
+        <div className="lp-feature-grid">
+          {FEATURES.map((f) => (
+            <article
+              key={f.title}
+              className={`lp-feature${f.wide ? " lp-feature-wide" : ""}`}
+            >
+              <div className="lp-feature-icon">{f.icon}</div>
+              <h3>{f.title}</h3>
+              <p>{f.detail}</p>
+              <span className="lp-feature-foot">{f.foot}</span>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -186,7 +329,7 @@ export default function Landing({ user }) {
           </div>
           <div className="step">
             <div className="step-number">02</div>
-            <h3>Unlock for ₹59</h3>
+            <h3>Unlock for ₹39</h3>
             <p>One payment, permanent access, updates included.</p>
           </div>
           <div className="step">
@@ -202,7 +345,7 @@ export default function Landing({ user }) {
       ================================== */}
 
       <section className="section wrap">
-        <span className="section-tag">Why it's worth ₹59</span>
+        <span className="section-tag">Why it's worth ₹39</span>
         <h2>Less than a canteen meal. Built to actually be used.</h2>
 
         <div className="reasons-grid">
@@ -275,7 +418,7 @@ export default function Landing({ user }) {
       </section>
 
       <footer className="footer wrap">
-        <span>© {new Date().getFullYear()} Prep Vault</span>
+        <span>© {new Date().getFullYear()} Prepify</span>
         <span>Built for students, updated every placement season</span>
       </footer>
     </div>

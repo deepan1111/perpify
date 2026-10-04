@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../lib/api.js";
+import logo from "../pages/logo5.png";
 
 import "./Auth.css";
 
@@ -12,6 +13,7 @@ export default function Login({ onAuthed }) {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -51,79 +53,88 @@ export default function Login({ onAuthed }) {
 
   return (
     <div className="auth-shell">
-
       {/* TOPBAR — redirects back to the landing page */}
       <div className="auth-topbar">
-        <Link to="/" className="auth-brand">
-          Prep Vault
-        </Link>
+        <div className="dashboard-brand">
+          <img
+            src={logo}
+            alt="Prepify"
+            className="dashboard-logo"
+            style={{
+              width: "150px",
+              height: "auto",
+              display: "block",
+              objectFit: "contain",
+            }}
+          />
+        </div>
 
         <Link to="/" className="auth-home-link">
           ← Back to home
         </Link>
       </div>
 
-      <div className="auth-card">
-        <h1>Welcome back</h1>
+      <main className="auth-main">
+        <div className="auth-card">
+          <h1>Welcome back</h1>
 
-        <p className="sub">
-          Log in to see your packs and pick up where you left off.
-        </p>
+          <p className="sub">
+            Log in to see your packs and pick up where you left off.
+          </p>
 
-        {error && (
-          <div className="form-error">
-            {error}
-          </div>
-        )}
+          {error && (
+            <div className="form-error" role="alert">
+              {error}
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="field">
-            <label htmlFor="email">
-              Email
-            </label>
+          <form onSubmit={handleSubmit}>
+            <div className="field">
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                required
+                autoComplete="email"
+                placeholder="you@college.edu"
+                value={form.email}
+                onChange={update("email")}
+              />
+            </div>
 
-            <input
-              id="email"
-              type="email"
-              required
-              placeholder="you@college.edu"
-              value={form.email}
-              onChange={update("email")}
-            />
-          </div>
+            <div className="field">
+              <label htmlFor="password">Password</label>
+              <div className="auth-password">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  autoComplete="current-password"
+                  placeholder="••••••••"
+                  value={form.password}
+                  onChange={update("password")}
+                />
+                <button
+                  type="button"
+                  className="auth-toggle"
+                  onClick={() => setShowPassword((s) => !s)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
+            </div>
 
-          <div className="field">
-            <label htmlFor="password">
-              Password
-            </label>
+            <button className="btn btn-primary auth-submit" disabled={loading}>
+              {loading ? "Logging in…" : "Log in"}
+            </button>
+          </form>
 
-            <input
-              id="password"
-              type="password"
-              required
-              placeholder="••••••••"
-              value={form.password}
-              onChange={update("password")}
-            />
-          </div>
-
-          <button
-            className="btn btn-primary auth-submit"
-            disabled={loading}
-          >
-            {loading
-              ? "Logging in…"
-              : "Log in"}
-          </button>
-        </form>
-
-        <p className="auth-switch">
-          New here?{" "}
-          <Link to="/signup">
-            Create an account
-          </Link>
-        </p>
-      </div>
+          <p className="auth-switch">
+            New here? <Link to="/signup">Create an account</Link>
+          </p>
+        </div>
+      </main>
     </div>
   );
 }

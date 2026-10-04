@@ -1,5 +1,5 @@
 /* =========================================
-   PREP VAULT — AUTH PAGES
+   PREPIFY — AUTH PAGES
    Shared by Login and Signup. Same system
    as the landing page and dashboard.
 ========================================= */
@@ -355,4 +355,63 @@ a:focus-visible {
   .auth-topbar {
     padding: 18px 5%;
   }
+}
+
+/* =========================================
+   PASSWORD FIELD
+========================================= */
+
+.auth-password {
+  position: relative;
+  width: 100%;
+}
+
+.auth-password input {
+  width: 100%;
+  padding-right: 64px;
+}
+
+.auth-toggle {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+
+  padding: 4px 6px;
+  border: none;
+  background: transparent;
+
+  color: var(--indigo);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.auth-toggle:hover {
+  color: var(--indigo-ink);
+  background: rgba(42, 52, 146, 0.08);
+}
+
+.auth-toggle:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}
+
+
+/* =========================================
+   PASSWORD HINT
+========================================= */
+
+.field-hint {
+  display: block;
+  margin-top: 6px;
+
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
 }

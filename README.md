@@ -1,4 +1,4 @@
-# Prep Vault — starter
+# Prepify — starter
 
 Landing page + login/signup, with a free-credits mechanic (3 free credits on signup, used later to unlock a ₹59 pack).
 

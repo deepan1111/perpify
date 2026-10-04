@@ -1,7 +1,10 @@
 /* =========================================
-   PREP VAULT — LANDING PAGE
+   PREPIFY — LANDING PAGE (full file)
    Same design system as the dashboard:
    admit-card stubs, stamped ink, paper texture.
+   No new colours. New classes are prefixed "lp-"
+   or "hero-copy" so nothing in the dashboard CSS
+   is affected.
 ========================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
@@ -36,6 +39,11 @@
   box-sizing: border-box;
 }
 
+/* smooth anchor scrolling, only on pages that contain the landing */
+html:has(.landing) {
+  scroll-behavior: smooth;
+}
+
 .landing {
   background: var(--paper);
   background-image: radial-gradient(circle at 1px 1px, rgba(32, 31, 28, 0.05) 1px, transparent 0);
@@ -67,6 +75,11 @@
   cursor: pointer;
   border: 1.5px solid transparent;
   transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 3px;
 }
 
 .btn-primary {
@@ -109,6 +122,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 24px 0;
+  border-bottom: 1.5px dashed var(--rule-strong);
 }
 
 .brand {
@@ -144,14 +158,40 @@
   gap: 12px;
 }
 
+/* hamburger button (shown on phones only) */
+.nav-burger {
+  display: none;
+}
+
 /* =========================================
    HERO
+   Two columns: .hero-copy (text) + .lp-ticket
+   (the admit-card). Works without the ticket
+   too: the copy simply takes the full width.
 ========================================= */
 
 .hero {
   padding: 50px 0 60px;
   text-align: left;
   max-width: 760px;
+}
+
+/* when the hero holds both copy and ticket */
+.hero.wrap {
+  max-width: none;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.hero-copy {
+  max-width: 640px;
+  min-width: 0;
+}
+
+.lp-ticket {
+  min-width: 0;
 }
 
 .hero-eyebrow {
@@ -179,7 +219,8 @@
   letter-spacing: -1.4px;
 }
 
-.hero > p:not(.hero-eyebrow):not(.hero-note) {
+.hero > p:not(.hero-eyebrow):not(.hero-note),
+.hero-copy > p:not(.hero-eyebrow):not(.hero-note) {
   max-width: 58ch;
   margin: 22px 0 0;
   color: var(--ink-soft);
@@ -200,6 +241,173 @@
   color: var(--ink-soft);
   font-family: var(--font-mono);
   font-size: 11.5px;
+}
+
+/* ---------- admit-card (the hero's one memorable element) ---------- */
+
+.lp-ticket {
+  position: relative;
+  background: var(--ink);
+  color: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: 8px 10px 0 var(--rule-strong);
+  transform: rotate(2deg);
+  animation: lp-ticket-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes lp-ticket-in {
+  from {
+    opacity: 0;
+    transform: translateY(26px) rotate(5deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(2deg);
+  }
+}
+
+.lp-ticket-top {
+  padding: 26px 28px 22px;
+}
+
+.lp-ticket-company {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.lp-ticket-logo {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.lp-ticket-company strong {
+  display: block;
+  font-size: 14px;
+}
+
+.lp-ticket-company span {
+  color: #b9b6ad;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+}
+
+.lp-ticket h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.lp-ticket-role {
+  margin: 6px 0 0;
+  color: var(--gold);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.lp-ticket-rounds {
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lp-ticket-rounds li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1.5px dashed #b9b6ad;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.lp-ticket-rounds li b {
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.lp-ticket-rounds li span {
+  margin-left: auto;
+  color: #b9b6ad;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+/* perforation with side notches */
+.lp-ticket-tear {
+  position: relative;
+  height: 0;
+  border-top: 2px dashed #b9b6ad;
+}
+
+.lp-ticket-tear::before,
+.lp-ticket-tear::after {
+  content: "";
+  position: absolute;
+  top: -13px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--paper);
+}
+
+.lp-ticket-tear::before {
+  left: -12px;
+}
+
+.lp-ticket-tear::after {
+  right: -12px;
+}
+
+.lp-ticket-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 28px 22px;
+}
+
+.lp-ticket-bottom span {
+  display: block;
+  color: #b9b6ad;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.lp-ticket-bottom strong {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.lp-ticket-stamp {
+  padding: 7px 12px;
+  border: 2px solid var(--gold);
+  border-radius: var(--radius-sm);
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  transform: rotate(-6deg);
 }
 
 /* =========================================
@@ -291,6 +499,7 @@
 .compare-card.good {
   background: var(--ink);
   color: #fff;
+  box-shadow: 6px 8px 0 var(--rule-strong);
 }
 
 .compare-card h3 {
@@ -340,6 +549,97 @@
 }
 
 /* =========================================
+   FEATURES (new) — what you get
+========================================= */
+
+.lp-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.lp-feature {
+  display: flex;
+  flex-direction: column;
+  padding: 26px 24px 20px;
+  background: var(--paper-raised);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-md);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.lp-feature:hover {
+  transform: translateY(-3px);
+  box-shadow: 4px 6px 0 var(--rule-strong);
+}
+
+.lp-feature-icon {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  border-radius: var(--radius-sm);
+  background: var(--gold-soft);
+  font-size: 19px;
+}
+
+.lp-feature h3 {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.lp-feature p {
+  margin: 0 0 18px;
+  color: var(--ink-soft);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+
+.lp-feature-foot {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1.5px dashed var(--rule-strong);
+  color: var(--indigo);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+/* the first card carries the main promise, so it flips to ink */
+.lp-feature-wide {
+  grid-column: span 2;
+  background: var(--ink);
+}
+
+.lp-feature-wide h3 {
+  color: #fff;
+  font-size: 23px;
+}
+
+.lp-feature-wide p {
+  max-width: 52ch;
+  color: #cfcbc4;
+}
+
+.lp-feature-wide .lp-feature-icon {
+  background: var(--gold);
+}
+
+.lp-feature-wide .lp-feature-foot {
+  border-top-color: #b9b6ad;
+  color: var(--gold);
+}
+
+.lp-feature-wide:hover {
+  box-shadow: 4px 6px 0 var(--gold);
+}
+
+/* =========================================
    WHAT'S INSIDE — ticket stubs
 ========================================= */
 
@@ -354,7 +654,13 @@
   background: var(--paper-raised);
   border: 1.5px solid var(--ink);
   border-radius: var(--radius-md);
-  padding: 26px 24px 24px;
+  padding: 30px 24px 26px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pack-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 4px 6px 0 var(--rule-strong);
 }
 
 .pack-item::before {
@@ -412,10 +718,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   border: 1.5px solid var(--ink);
+  background: var(--gold);
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 600;
@@ -456,6 +763,7 @@
   padding: 40px 44px;
   position: relative;
   overflow: hidden;
+  box-shadow: 8px 10px 0 var(--rule-strong);
 }
 
 .pricing-card::after {
@@ -531,11 +839,12 @@
 
 /* =========================================
    REASONS / TRUST
+   3 cards, so 3 columns on desktop
 ========================================= */
 
 .reasons-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 14px;
 }
 
@@ -546,6 +855,12 @@
   border: 1.5px solid var(--ink);
   border-radius: var(--radius-md);
   background: var(--paper-raised);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.reason-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 4px 6px 0 var(--rule-strong);
 }
 
 .reason-icon {
@@ -592,8 +907,9 @@
 .faq-item h3 {
   margin: 0 0 8px;
   color: var(--ink);
-  font-size: 15.5px;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
 }
 
 .faq-item p {
@@ -649,13 +965,69 @@
 
 /* =========================================
    RESPONSIVE
+   Breakpoints: 1024 (small laptop), 880 (tablet),
+   600 (phone), 420 (small phone).
+   Needs <meta name="viewport"
+   content="width=device-width, initial-scale=1">
+   in index.html.
 ========================================= */
 
+/* ---------- small laptop ---------- */
+@media (max-width: 1024px) {
+  .hero.wrap {
+    gap: 36px;
+  }
+
+  .lp-ticket h3 {
+    font-size: 23px;
+  }
+
+  .pricing-card {
+    padding: 34px 32px;
+  }
+
+  .reason-card {
+    padding: 18px;
+    gap: 12px;
+  }
+}
+
+/* ---------- tablet ---------- */
 @media (max-width: 880px) {
+  .hero {
+    padding: 40px 0 44px;
+  }
+
+  .hero.wrap {
+    grid-template-columns: 1fr;
+    gap: 44px;
+  }
+
+  .hero-copy {
+    max-width: none;
+  }
+
+  .lp-ticket {
+    width: 100%;
+    max-width: 460px;
+  }
+
+  .section {
+    padding: 56px 0;
+  }
+
+  .section-lead {
+    margin-bottom: 30px;
+  }
+
   .compare-grid,
   .grid,
   .reasons-grid {
     grid-template-columns: 1fr;
+  }
+
+  .lp-feature-grid {
+    grid-template-columns: 1fr 1fr;
   }
 
   .steps {
@@ -671,40 +1043,302 @@
     border-bottom: none;
   }
 
+  .pricing-section {
+    padding: 50px 0 60px;
+  }
+
   .pricing-card {
     flex-direction: column;
     align-items: flex-start;
   }
 }
 
+/* ---------- phone ---------- */
 @media (max-width: 600px) {
+  /* nav: logo + burger, links live in a dropdown */
   .nav {
-    padding: 18px 0;
+    position: relative;
+    padding: 14px 0;
+    gap: 10px;
   }
 
+  .nav .dashboard-logo {
+    width: 112px !important; /* beats the inline width on the <img> */
+  }
+
+  .nav-burger {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0;
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+    background: var(--paper-raised);
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .nav-burger:focus-visible {
+    outline: 2px solid var(--indigo);
+    outline-offset: 3px;
+  }
+
+  .nav-burger span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--ink);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .nav-burger.is-open {
+    background: var(--gold);
+  }
+
+  .nav-burger.is-open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .nav-burger.is-open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .nav-burger.is-open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    margin-top: 10px;
+    padding: 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    background: var(--paper-raised);
+    border: 1.5px solid var(--ink);
+    border-radius: var(--radius-md);
+    box-shadow: 4px 6px 0 var(--rule-strong);
+  }
+
+  .nav-links.is-open {
+    display: flex;
+  }
+
+  .nav-links .btn {
+    justify-content: center;
+    width: 100%;
+  }
+
+  /* hero */
   .hero {
-    padding: 34px 0 44px;
+    padding: 30px 0 36px;
   }
 
+  .hero h1 {
+    letter-spacing: -1px;
+  }
+
+  .hero > p:not(.hero-eyebrow):not(.hero-note),
+  .hero-copy > p:not(.hero-eyebrow):not(.hero-note) {
+    font-size: 15.5px;
+    margin-top: 18px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-top: 26px;
+  }
+
+  .hero-actions .btn {
+    justify-content: center;
+  }
+
+  /* the ticket sits flat on phones (no rotation, smaller shadow) */
+  .lp-ticket {
+    animation: none;
+    transform: none;
+    max-width: none;
+    box-shadow: 5px 6px 0 var(--rule-strong);
+  }
+
+  .lp-ticket-top {
+    padding: 22px 20px 18px;
+  }
+
+  .lp-ticket-bottom {
+    padding: 16px 20px 20px;
+  }
+
+  .lp-ticket h3 {
+    font-size: 21px;
+  }
+
+  .lp-ticket-rounds li {
+    padding: 9px 10px;
+    font-size: 12.5px;
+    gap: 9px;
+  }
+
+  /* buttons are easier to tap */
+  .btn {
+    min-height: 44px;
+  }
+
+  /* company strip: wraps neatly */
   .companies {
     justify-content: flex-start;
+    padding: 16px 0;
+    row-gap: 6px;
   }
 
   .companies span {
-    padding: 6px 14px;
+    padding: 4px 12px;
     font-size: 12px;
   }
 
+  /* sections */
   .section {
-    padding: 50px 0;
+    padding: 44px 0;
+  }
+
+  .section > h2 {
+    max-width: none;
+  }
+
+  .section-lead {
+    font-size: 14.5px;
+    margin-bottom: 26px;
+  }
+
+  .compare-card {
+    padding: 22px 20px;
+  }
+
+  .compare-card.good {
+    box-shadow: 4px 5px 0 var(--rule-strong);
+  }
+
+  .lp-feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lp-feature,
+  .lp-feature-wide {
+    grid-column: auto;
+    padding: 22px 20px 18px;
+  }
+
+  .lp-feature-wide h3 {
+    font-size: 20px;
+  }
+
+  .pack-item {
+    padding: 28px 20px 22px;
+  }
+
+  .step {
+    padding: 22px 20px;
+  }
+
+  .reason-card {
+    padding: 18px;
+  }
+
+  /* pricing */
+  .pricing-section {
+    padding: 36px 0 48px;
   }
 
   .pricing-card {
-    padding: 30px 26px;
+    padding: 30px 22px;
+    gap: 22px;
+    box-shadow: 5px 6px 0 var(--rule-strong);
+  }
+
+  .pricing-right {
+    width: 100%;
+  }
+
+  .pricing-right .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* faq */
+  .faq-item {
+    padding: 18px 0;
+  }
+
+  .faq-item h3 {
+    font-size: 16px;
+  }
+
+  /* closing */
+  .final-cta {
+    padding: 14px 0 60px;
+  }
+
+  .final-cta .btn {
+    width: 100%;
+    max-width: 380px;
+    justify-content: center;
   }
 
   .footer {
     flex-direction: column;
     align-items: flex-start;
+    padding: 22px 0 34px;
+  }
+}
+
+/* ---------- small phone ---------- */
+@media (max-width: 420px) {
+  .hero h1 {
+    font-size: 32px;
+  }
+}
+
+/* ---------- touch screens: no sticky hover lifts ---------- */
+@media (hover: none) {
+  .lp-feature:hover,
+  .pack-item:hover,
+  .reason-card:hover,
+  .lp-feature-wide:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-primary:hover,
+  .btn-gold:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:has(.landing) {
+    scroll-behavior: auto;
+  }
+
+  .lp-ticket {
+    animation: none;
+  }
+
+  .lp-feature,
+  .pack-item,
+  .reason-card,
+  .nav-burger span {
+    transition: none;
   }
 }

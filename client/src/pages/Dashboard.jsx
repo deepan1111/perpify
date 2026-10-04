@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import logo from "../pages/logo5.png"
 
 import {
   fetchPublicCompanies,
@@ -176,12 +177,19 @@ export default function Dashboard({ user, onLogout }) {
 
         <div className="dashboard-brand">
 
-          <div className="brand-mark">P</div>
+          {/* <div className="brand-mark">P</div> */}
 
-          <div>
-            <h2>Prepify</h2>
-            <span>Interview Preparation</span>
-          </div>
+      <img
+  src={logo}
+  alt="Prepify"
+  className="dashboard-logo"
+  style={{
+    width: "150px",
+    height: "auto",
+    display: "block",
+    objectFit: "contain",
+  }}
+/>
 
         </div>
 
@@ -225,13 +233,13 @@ export default function Dashboard({ user, onLogout }) {
             </p>
           </div>
 
-          <div className="credits-widget">
+          {/* <div className="credits-widget">
             <div className="credits-icon">✦</div>
             <div>
               <span>AVAILABLE CREDITS</span>
               <strong>{user?.credits ?? 0}</strong>
             </div>
-          </div>
+          </div> */}
 
         </section>
 

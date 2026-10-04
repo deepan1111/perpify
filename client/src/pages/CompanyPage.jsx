@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
+import logo from "../pages/logo5.png"
 import {
   fetchPublicCompanies,
   fetchPublishedPacks,
@@ -151,11 +151,17 @@ export default function CompanyPage() {
 
       <header className="user-dashboard-header">
         <div className="dashboard-brand">
-          <div className="brand-mark">P</div>
-          <div>
-            <h2>Prepify</h2>
-            <span>Interview Preparation</span>
-          </div>
+          <img
+       src={logo}
+       alt="Prepify"
+       className="dashboard-logo"
+       style={{
+         width: "150px",
+         height: "auto",
+         display: "block",
+         objectFit: "contain",
+       }}
+     />
         </div>
       </header>
 

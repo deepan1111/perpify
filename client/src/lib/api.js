@@ -330,6 +330,27 @@ export function deleteAdminPack(
   );
 }
 
+export function createPaymentOrder(token, packId) {
+  return request("/payments/create-order", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      packId,
+    }),
+  });
+}
+
+export function verifyPayment(token, paymentData) {
+  return request("/payments/verify", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(paymentData),
+  });
+}
 
 export function toggleAdminPackPublished(
   token,
