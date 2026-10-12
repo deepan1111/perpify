@@ -417,11 +417,11 @@ export default function Dashboard({ user, onLogout }) {
                                 <div className="pack-role-tag">{roleName}</div>
                               )}
 
-                              <p className="pack-description">
+                              {/* <p className="pack-description">
                                 {pack.preparation ||
                                   pack.description ||
                                   "Company-specific interview preparation material."}
-                              </p>
+                              </p> */}
 
                               <div className="pack-meta">
                                 <span>
